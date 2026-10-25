@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="bn"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>আমার বাকি খাতা</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&display=swap">
+<style>
+:root{--bg:#f1ebd9;--ink:#222;--red:#c0392b;--g:#1e7a46;--card:#fff;--line:#9db9d6;--paper:#fffdf3;--mut:#666;--bd:#d8cfa8;color-scheme:light dark;padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1b18;--ink:#eee;--red:#ff8a7a;--g:#6fd69a;--card:#2a2925;--line:#4b6a8a;--paper:#2f2d27;--mut:#aaa;--bd:#555}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 'Noto Sans Bengali','Kalpurush',system-ui,sans-serif;padding-bottom:90px}
+#app{padding:12px;max-width:720px;margin:auto}
+h1{font-size:22px;margin:6px 0 12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;margin:8px 0}
+.cr{display:flex;justify-content:space-between;align-items:center;gap:8px;cursor:pointer}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.g2 .card{margin:0}
+.st small{color:var(--mut);display:block}.st b{font-size:20px}
+.btn{display:block;width:100%;min-height:52px;margin:8px 0;border:0;border-radius:12px;background:var(--g);color:#fff;font:700 18px inherit;font-family:inherit;cursor:pointer}
+.btn.red{background:#c0392b}.btn.gray{background:#8a8a8a}.btn.big{min-height:60px;font-size:20px}
+.row{display:flex;gap:8px}.row .btn{flex:1}
+.in{width:100%;min-height:50px;padding:8px 10px;border:1px solid var(--bd);border-radius:10px;font:inherit;background:var(--card);color:var(--ink);margin:4px 0 10px}
+label{font-weight:700;font-size:15px}
+.r{color:var(--red)}.g{color:var(--g)}.mut,small{color:var(--mut)}
+.sm{min-width:36px;min-height:36px;border:1px solid var(--bd);background:var(--card);color:var(--ink);border-radius:8px;margin:1px;font-size:15px}
+.paper{background:var(--paper) linear-gradient(90deg,var(--red) 0 2px,transparent 2px 5px,var(--red) 5px 7px,transparent 7px) no-repeat;border:1px solid var(--bd);padding:8px 6px 8px 16px;overflow-x:auto;border-radius:6px}
+table{width:100%;border-collapse:collapse;min-width:470px}
+th{font-size:14px;border-bottom:2px solid var(--red);text-align:left;padding:6px 3px}
+td{border-bottom:1px solid var(--line);padding:9px 3px;vertical-align:top;height:44px}
+td:nth-child(n+3),th:nth-child(n+3){text-align:right}
+.lt td{background:rgba(255,200,0,.18)}
+.tl{font-weight:700;letter-spacing:1px}.tg{position:relative;display:inline-block;margin-right:8px}
+.tg::after{content:'';position:absolute;left:-3px;right:-3px;top:50%;border-top:2px solid var(--ink);transform:rotate(-22deg)}
+#nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+#nav button{flex:1;border:0;background:none;color:var(--mut);font:inherit;font-size:11px;padding:6px 2px;min-height:58px}
+#nav button.on{color:var(--g);font-weight:700}#nav span{display:block;font-size:20px}
+#m{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);align-items:center;justify-content:center;z-index:9;padding:16px}
+.mb{background:var(--card);border-radius:14px;padding:16px;width:100%;max-width:420px}
+#to{position:fixed;left:12px;right:12px;bottom:80px;background:#222;color:#fff;padding:12px;border-radius:10px;display:none;z-index:10;text-align:center}
+textarea.in{min-height:110px;font-size:12px}
+@media print{#nav,.np,.btn,#to{display:none!important}body{background:#fff}}
+#sb{position:sticky;top:0;z-index:4;background:var(--card);border-bottom:1px solid var(--bd);padding:6px 12px;font-size:14px;text-align:center}#sb:empty{display:none}
+</style></head><body>
+<div id="sb" onclick="sync()"></div><div id="app"></div>
+<nav id="nav"></nav><div id="m"></div><div id="to"></div>
+<script>
+// ===== সেটআপ: Supabase → Project Settings → API থেকে এই দুটি বসান (শুধু anon/public key; service_role কখনোই নয়) =====
+const SUPABASE_URL=localStorage.getItem('sb_url')||'https://keprcjieatoauvydqjlp.supabase.co',SUPABASE_KEY=localStorage.getItem('sb_key')||'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtlcHJjamllYXRvYXV2eWRxamxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MDM5NDQsImV4cCI6MjEwODE3OTk0NH0.rJ-kvz_7tSYtMXrjj6Qv85jLxEWNhwFI5pz3Ol-eOYc';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),D='০১২৩৪৫৬৭৮৯';
+const bn=s=>String(s).replace(/\d/g,d=>D[d]),en=s=>String(s).replace(/[০-৯]/g,d=>D.indexOf(d));
+const money=p=>(p<0?'-':'')+'৳'+bn((Math.abs(p)/100).toLocaleString('en-US',{maximumFractionDigits:2}));
+const toP=s=>{s=en(s).replace(/,/g,'').trim();return /^\d+(\.\d{1,2})?$/.test(s)?Math.round(parseFloat(s)*100):NaN};
+const p2=n=>String(n).padStart(2,'0'),today=()=>{const d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate())};
+const fd=s=>bn(s.split('-').reverse().join('-')),uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tally=n=>{let h='';for(;n>=5;n-=5)h+='<span class="tg">||||</span>';return h+(n?'<span>'+'|'.repeat(n)+'</span>':'')};
+let db,S={c:[],t:[]},V={t:'home',id:null,e:null,R:{f:'',to:''},owe:0,sb:0},busy=0,TY='b',last={s:'',t:0};
+/* ---------- IndexedDB ---------- */
+const tr=(st,f)=>new Promise((r,j)=>{const t=db.transaction(st,'readwrite');f(t);t.oncomplete=r;t.onerror=t.onabort=()=>j(t.error)});
+const all=st=>new Promise((r,j)=>{const q=db.transaction(st).objectStore(st).getAll();q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});
+const up=(a,o)=>{const i=a.findIndex(x=>x.id==o.id);i<0?a.push(o):a[i]=o};
+async function dbC(o){await tr('c',t=>t.objectStore('c').put(o));up(S.c,o)}
+async function dbT(o){await tr('t',t=>t.objectStore('t').put(o));up(S.t,o)}
+async function delT_(id){await tr('t',t=>t.objectStore('t').delete(id));S.t=S.t.filter(x=>x.id!=id)}
+async function delC_(id){await tr(['c','t'],t=>{t.objectStore('c').delete(id);S.t.filter(x=>x.cid==id).forEach(x=>t.objectStore('t').delete(x.id))});S.c=S.c.filter(x=>x.id!=id);S.t=S.t.filter(x=>x.cid!=id)}
+/* ---------- helpers ---------- */
+const tsOf=c=>S.t.filter(x=>x.cid==c).sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:a.ts-b.ts);
+const bm=()=>{const B={};S.t.forEach(x=>B[x.cid]=(B[x.cid]||0)+(x.type=='b'?x.amt:-x.amt));return B};
+const cname=id=>(S.c.find(c=>c.id==id)||{}).n||'';
+function toast(m){const t=$('#to');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3500)}
+const err=m=>toast('⚠ '+m);
+function ask(msg,ok,danger){return new Promise(r=>{const m=$('#m');m.innerHTML=`<div class="mb"><p>${msg}</p><div class="row"><button class="btn gray" id="mn">না, বাতিল</button><button class="btn ${danger?'red':''}" id="my">${ok||'হ্যাঁ, ঠিক আছে'}</button></div></div>`;m.style.display='flex';$('#mn').onclick=()=>{m.style.display='none';r(false)};$('#my').onclick=()=>{m.style.display='none';r(true)}})}
+function go(t,id,e){V.t=t;V.id=id||null;V.e=e||null;render();scrollTo(0,0)}
+const st=(l,v,c)=>`<div class="card st"><small>${l}</small><b class="${c||''}">${v}</b></div>`;
+/* ---------- list ---------- */
+function CL(q,f){q=en((q||'').trim().toLowerCase());const B=bm();let a=S.c.filter(c=>!q||c.n.toLowerCase().includes(q)||en(c.p||'').includes(q));
+if(f&&V.owe)a=a.filter(c=>(B[c.id]||0)>0);
+a.sort(f&&V.sb?(x,y)=>(B[y.id]||0)-(B[x.id]||0):(x,y)=>x.n.localeCompare(y.n,'bn'));
+return a.length?a.map(c=>`<div class="card cr" onclick="go('led','${c.id}')"><div><b>${esc(c.n)}</b><br><small>${esc(c.p||'')}</small></div><b class="${(B[c.id]||0)>0?'r':'g'}">${money(B[c.id]||0)}</b></div>`).join(''):'<p class="mut">কোনো কাস্টমার পাওয়া যায়নি</p>'}
+/* ---------- screens ---------- */
+function Home(){const B=bm(),d=today();let tot=0,col=0,nb=0;for(const k in B)tot+=B[k];
+S.t.forEach(x=>{if(x.date==d){if(x.type=='j')col+=x.amt;else if(!x.o)nb+=x.amt}});
+return `<h1>📒 ${esc(SH&&SH.n||'আমার বাকি খাতা')}</h1><div class="g2">${st('মোট বাকি পাওনা',money(tot),'r')}${st('আজকে মোট আদায়',money(col),'g')}${st('মোট কাস্টমার',bn(S.c.length))}${st('আজকের নতুন বাকি',money(nb),'r')}</div>
+<button class="btn big" onclick="go('cf')">+ নতুন কাস্টমার</button><button class="btn big red" onclick="go('tx',null,{type:'b'})">+ বাকি লিখুন</button><button class="btn big" onclick="go('tx',null,{type:'j'})">+ টাকা জমা</button>
+<input class="in" placeholder="🔍 নাম বা মোবাইল নম্বর দিয়ে খুঁজুন" oninput="$('#hl').innerHTML=CL(this.value)"><div id="hl">${CL('')}</div>`}
+function Cust(){return `<h1>কাস্টমার</h1><button class="btn" onclick="go('cf')">+ নতুন কাস্টমার</button>
+<input id="q" class="in" placeholder="🔍 নাম বা মোবাইল নম্বর" oninput="$('#hl').innerHTML=CL(this.value,1)">
+<label><input type="checkbox" ${V.owe?'checked':''} onchange="V.owe=this.checked;$('#hl').innerHTML=CL($('#q').value,1)"> শুধু যাদের বাকি আছে</label><br>
+<label><input type="checkbox" ${V.sb?'checked':''} onchange="V.sb=this.checked;$('#hl').innerHTML=CL($('#q').value,1)"> সবচেয়ে বেশি বাকি আগে</label><div id="hl">${CL('',1)}</div>`}
+function Led(){const c=S.c.find(x=>x.id==V.id);if(!c)return Cust();const a=tsOf(c.id);let r=0,tb=0,tj=0;
+const rows=a.map((x,i)=>{const b=x.type=='b';r+=b?x.amt:-x.amt;b?tb+=x.amt:tj+=x.amt;
+return `<tr${i==a.length-1?' id="last" class="lt"':''}><td>${fd(x.date)}</td><td>${esc(x.note||(b?'বাকি':'জমা'))}${PS.has('t:'+x.id)?' ⏳':''}${x.tl?'<div class="tl">'+tally(x.tl)+'</div>':''}</td><td class="r">${b?money(x.amt):'০'}</td><td class="g">${b?'০':money(x.amt)}</td><td><b>${money(r)}</b></td><td class="np"><button class="sm" onclick="editT('${x.id}')">✎</button><button class="sm" onclick="delT('${x.id}')">✕</button></td></tr>`}).join('');
+return `<button class="sm np" onclick="go('cust')">← ফিরে যান</button>
+<div class="g2" style="margin-top:8px">${st('মোট বাকি দেওয়া',money(tb),'r')}${st('মোট জমা পেয়েছি',money(tj),'g')}</div>${st('বর্তমান অবশিষ্ট পাওনা',money(r),r>0?'r':'g')}
+<div class="row np"><button class="btn red" onclick="go('tx',null,{cid:'${c.id}',type:'b'})">+ বাকি লিখুন</button><button class="btn" onclick="go('tx',null,{cid:'${c.id}',type:'j'})">+ জমা নিন</button></div>
+<div class="paper"><p style="margin:2px 0"><b>কাস্টমারের নাম: ${esc(c.n)}</b><br><small>${esc(c.p||'')} ${esc(c.a||'')}</small></p>
+<table><tr><th>তারিখ</th><th>বিবরণ</th><th>বাকি (+)</th><th>জমা (-)</th><th>অবশিষ্ট পাওনা</th><th class="np"></th></tr>${rows||'<tr><td colspan="6">এখনো কোনো লেনদেন নেই</td></tr>'}</table></div>
+<div class="row np"><button class="btn gray" onclick="$('#last')&&$('#last').scrollIntoView({block:'center'})">⬇ সর্বশেষ লেনদেন</button><button class="btn gray" onclick="try{print()}catch(e){err('ব্রাউজার মেনু থেকে প্রিন্ট করুন')}">🖨 প্রিন্ট / PDF</button></div>
+<div class="row np"><button class="btn gray" onclick="go('cf',null,S.c.find(x=>x.id=='${c.id}'))">✎ তথ্য বদলান</button><button class="btn red" onclick="delCu('${c.id}')">🗑 কাস্টমার মুছুন</button></div>`}
+function CF(){const c=V.e;return `<h1>${c?'কাস্টমারের তথ্য বদলান':'নতুন কাস্টমার'}</h1><div class="card">
+<label>নাম *</label><input id="cn" class="in" value="${esc(c&&c.n)}">
+<label>মোবাইল নম্বর (না দিলেও চলবে)</label><input id="cp" class="in" inputmode="tel" value="${esc(c&&c.p)}">
+<label>ঠিকানা (না দিলেও চলবে)</label><input id="ca" class="in" value="${esc(c&&c.a)}">
+${c?`<p class="mut">যোগ করার তারিখ: ${fd(c.d)}</p>`:`<label>আগের পাওনা ৳ (না দিলেও চলবে)</label><input id="co" class="in" inputmode="decimal" placeholder="০">`}
+<button class="btn big" onclick="saveCu()">সেভ করুন</button><button class="btn gray" onclick="go(V.e?'led':'cust',V.e&&V.e.id)">বাতিল</button></div>`}
+function TXF(){if(!S.c.length)return `<h1>নতুন হিসাব</h1><div class="card"><p>আগে একজন কাস্টমার যোগ করুন।</p><button class="btn big" onclick="go('cf')">+ নতুন কাস্টমার</button></div>`;
+const e=V.e||{};TY=e.type||'b';
+return `<h1>${e.id?'হিসাব সংশোধন':'নতুন হিসাব'}</h1><div class="card"><label>কাস্টমার</label><select id="fc" class="in"><option value="">— বাছাই করুন —</option>${[...S.c].sort((x,y)=>x.n.localeCompare(y.n,'bn')).map(c=>`<option value="${c.id}"${c.id==e.cid?' selected':''}>${esc(c.n)}</option>`).join('')}</select>
+<div class="row"><button id="tb" class="btn ${TY=='b'?'red':'gray'}" onclick="setTy('b')">বাকি (+)</button><button id="tj" class="btn ${TY=='j'?'':'gray'}" onclick="setTy('j')">জমা (−)</button></div>
+<label>টাকা (৳)</label><input id="fa" class="in" inputmode="decimal" placeholder="৳ ০" value="${e.amt?bn(e.amt/100):''}">
+<label>তারিখ</label><input id="fd" type="date" class="in" value="${e.date||today()}">
+<label>বিবরণ / নোট</label><input id="fn" class="in" value="${esc(e.note)}">
+<label>ট্যালি (গোনার জন্য, না দিলেও চলবে)</label><input id="ft" type="number" min="0" max="200" class="in" value="${e.tl||''}" oninput="$('#tp').innerHTML=tally(Math.min(+this.value||0,200))"><div id="tp" class="tl">${tally(e.tl||0)}</div><small>ট্যালি শুধু গোনার জন্য, টাকার হিসাব নয়।</small>
+<button class="btn big" onclick="saveTx()">সেভ করুন</button></div>`}
+function Rep(){const R=V.R,d=today();if(!R.f){R.f=d.slice(0,8)+'01';R.to=d}
+const a=S.t.filter(x=>x.date>=R.f&&x.date<=R.to).sort((x,y)=>x.date<y.date?1:x.date>y.date?-1:y.ts-x.ts);let b=0,j=0;a.forEach(x=>x.type=='b'?(x.o||(b+=x.amt)):j+=x.amt);
+const M={};S.t.forEach(x=>{const k=x.date.slice(0,7);M[k]=M[k]||[0,0];x.type=='b'?(x.o||(M[k][0]+=x.amt)):M[k][1]+=x.amt});
+const B=bm(),ow=S.c.filter(c=>B[c.id]>0).sort((x,y)=>B[y.id]-B[x.id]);let tot=0;ow.forEach(c=>tot+=B[c.id]);
+return `<h1>রিপোর্ট</h1>${st('দোকানের মোট পাওনা',money(tot),'r')}
+<div class="card"><div class="row"><button class="btn gray" onclick="V.R={f:'${d}',to:'${d}'};render()">আজ</button><button class="btn gray" onclick="V.R={f:'',to:''};render()">এই মাস</button><button class="btn gray" onclick="V.R={f:'2000-01-01',to:'${d}'};render()">সব</button></div>
+<label>থেকে</label><input type="date" class="in" value="${R.f}" onchange="V.R.f=this.value;render()"><label>পর্যন্ত</label><input type="date" class="in" value="${R.to}" onchange="V.R.to=this.value;render()">
+<b>বাকি: <span class="r">${money(b)}</span> | জমা: <span class="g">${money(j)}</span></b>
+<div style="overflow-x:auto"><table style="min-width:360px"><tr><th>তারিখ</th><th>কাস্টমার</th><th>বাকি</th><th>জমা</th></tr>${a.slice(0,200).map(x=>`<tr><td>${fd(x.date)}</td><td>${esc(cname(x.cid))}</td><td class="r">${x.type=='b'?money(x.amt):''}</td><td class="g">${x.type=='j'?money(x.amt):''}</td></tr>`).join('')||'<tr><td colspan="4">কোনো লেনদেন নেই</td></tr>'}</table></div></div>
+<div class="card"><b>মাসিক সারাংশ</b><table style="min-width:0"><tr><th>মাস</th><th>বাকি</th><th>জমা</th></tr>${Object.keys(M).sort().reverse().map(k=>`<tr><td>${bn(k.slice(5)+'-'+k.slice(0,4))}</td><td class="r">${money(M[k][0])}</td><td class="g">${money(M[k][1])}</td></tr>`).join('')}</table></div>
+<div class="card"><b>যাদের কাছে পাওনা (বেশি থেকে কম)</b><table style="min-width:0">${ow.map(c=>`<tr onclick="go('led','${c.id}')"><td>${esc(c.n)}</td><td class="r"><b>${money(B[c.id])}</b></td></tr>`).join('')||'<tr><td>কারো কাছে পাওনা নেই</td></tr>'}</table></div>`}
+function Set(){return `<h1>ব্যাকআপ ও নিরাপত্তা</h1><div class="card"><p>ডেটা এই ফোনেই সেভ থাকে, ইন্টারনেট লাগে না। নিয়মিত ব্যাকআপ নিন।</p>
+<button class="btn" onclick="out('baki-khata-backup-'+today()+'.json',JSON.stringify({v:2,c:S.c,t:S.t,s:SH?[SH]:[]}),'application/json')">ব্যাকআপ তৈরি করুন (JSON)</button>
+<button class="btn gray" onclick="csv()">লেনদেন CSV তৈরি করুন</button>
+<textarea id="bk" class="in" placeholder="ব্যাকআপের লেখা এখানে আসবে। ডাউনলোড না হলে 'কপি করুন' চাপুন ও কোথাও সেভ রাখুন। রিস্টোরের সময় এখানে পেস্ট করুন।"></textarea>
+<button class="btn gray" onclick="$('#bk').select();document.execCommand('copy');toast('কপি হয়েছে')">কপি করুন</button>
+<label>ব্যাকআপ ফাইল বাছুন</label><input type="file" class="in" accept=".json,application/json" onchange="rf(this)">
+<button class="btn red" onclick="restore()">রিস্টোর করুন</button>
+<button class="btn red" onclick="clearAll()">সব ডেটা মুছুন</button></div>`}
+/* ---------- actions ---------- */
+const setTy=t=>{TY=t;$('#tb').className='btn '+(t=='b'?'red':'gray');$('#tj').className='btn '+(t=='j'?'':'gray')};
+const editT=id=>go('tx',null,{...S.t.find(x=>x.id==id)});
+async function delT(id){const x=S.t.find(i=>i.id==id);if(!await ask('এই লেনদেন (<b>'+money(x.amt)+'</b>) মুছবেন? পরের সব অবশিষ্ট হিসাব নতুন করে মিলবে।','হ্যাঁ, মুছুন',1))return;try{await delT_(id);toast('মুছে গেছে');render()}catch(e){err('মোছা যায়নি')}}
+async function delCu(id){if(!await ask('⚠ <b>'+esc(cname(id))+'</b> এবং তার সব লেনদেন চিরতরে মুছে যাবে। নিশ্চিত?','হ্যাঁ, মুছুন',1))return;try{await delC_(id);toast('কাস্টমার মুছে গেছে');go('cust')}catch(e){err('মোছা যায়নি')}}
+async function saveCu(){if(busy)return;const n=$('#cn').value.trim(),p=en($('#cp').value).replace(/[\s+-]/g,'').replace(/^88/,''),a=$('#ca').value.trim();
+if(!n)return err('কাস্টমারের নাম লিখুন');if(p&&!/^01\d{9}$/.test(p))return err('মোবাইল নম্বর ১১ সংখ্যার হতে হবে (যেমন ০১৭১২৩৪৫৬৭৮)');
+let o=0;const ob=$('#co');if(ob&&ob.value.trim()){o=toP(ob.value);if(isNaN(o))return err('আগের পাওনার অঙ্ক ঠিক নয়')}
+busy=1;try{const e=V.e,c=e?{...e,n,p,a}:{id:uid(),n,p,a,d:today(),ts:Date.now()};await dbC(c);
+if(!e&&o>0)await dbT({id:uid(),cid:c.id,date:today(),type:'b',amt:o,note:'আগের পাওনা',tl:0,o:1,ts:Date.now()});toast('সেভ হয়েছে ✔');go('led',c.id)}catch(x){err('সেভ করা যায়নি')}finally{busy=0}}
+async function saveTx(){if(busy)return;const cid=$('#fc').value,amt=toP($('#fa').value),date=$('#fd').value,note=$('#fn').value.trim(),tl=Math.min(Math.max(+$('#ft').value||0,0),200),e=V.e||{};
+if(!cid)return err('কাস্টমার বাছাই করুন');if(!(amt>0))return err('সঠিক টাকার অঙ্ক লিখুন (০ বা ভুল অঙ্ক চলবে না)');if(!date)return err('তারিখ দিন');
+const sig=[e.id,cid,TY,amt,date,note,tl].join('|');if(sig==last.s&&Date.now()-last.t<8000)return toast('এটি আগেই সেভ হয়েছে');
+busy=1;try{const cur=S.t.reduce((s,x)=>x.cid==cid&&x.id!=e.id?s+(x.type=='b'?x.amt:-x.amt):s,0);
+let m=`<b>${TY=='b'?'বাকি':'জমা'} ${money(amt)}</b><br>${esc(cname(cid))} · ${fd(date)}<br>সেভ করবেন?`;
+if(TY=='j'&&amt>cur)m=`<span class="r">⚠ সতর্কতা: জমার অঙ্ক বর্তমান পাওনা (${money(cur)}) এর চেয়ে বেশি। অবশিষ্ট হিসাব মাইনাস (${money(cur-amt)}) হবে।</span><br><br>`+m;
+if(!await ask(m,'হ্যাঁ, সেভ করুন'))return;
+await dbT({id:e.id||uid(),cid,date,type:TY,amt,note,tl,o:e.o||0,ts:e.ts||Date.now()});last={s:sig,t:Date.now()};toast('সেভ হয়েছে ✔');go('led',cid)}catch(x){err('সেভ করা যায়নি')}finally{busy=0}}
+function out(n,txt,m){const b=$('#bk');b&&(b.value=txt);try{const u=URL.createObjectURL(new Blob([txt],{type:m})),a=document.createElement('a');a.href=u;a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)}catch(e){}toast('তৈরি হয়েছে। ডাউনলোড না হলে নিচের লেখা কপি করে রাখুন')}
+function csv(){const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"';out('lenden-'+today()+'.csv','\ufeff'+['তারিখ,কাস্টমার,মোবাইল,ধরন,টাকা,বিবরণ'].concat([...S.t].sort((a,b)=>a.date<b.date?-1:1).map(x=>{const c=S.c.find(i=>i.id==x.cid)||{};return [fd(x.date),q(c.n),q(c.p),x.type=='b'?'বাকি':'জমা',x.amt/100,q(x.note)].join(',')})).join('\n'),'text/csv')}
+const rf=i=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$('#bk').value=r.result;toast('ফাইল পড়া হয়েছে। এবার "রিস্টোর করুন" চাপুন')};r.readAsText(f)};
+async function restore(){let o;try{o=JSON.parse($('#bk').value.trim())}catch(e){return err('ব্যাকআপের লেখা ঠিক নয়')}
+if(!o||!Array.isArray(o.c)||!Array.isArray(o.t)||o.c.some(x=>!x.id||!x.n)||o.t.some(x=>!x.id||!x.cid||!(x.amt>0)||!x.date||!/^[bj]$/.test(x.type)))return err('এটি সঠিক ব্যাকআপ ফাইল নয়');
+if(!await ask('⚠ এখনকার সব তথ্য মুছে ব্যাকআপের তথ্য বসবে ('+bn(o.c.length)+' কাস্টমার, '+bn(o.t.length)+' লেনদেন)। নিশ্চিত?','হ্যাঁ, রিস্টোর করুন',1))return;
+const c=[...new Map(o.c.map(x=>[x.id,x])).values()],t=[...new Map(o.t.map(x=>[x.id,x])).values()];
+try{await tr(['c','t'],x=>{x.objectStore('c').clear();x.objectStore('t').clear();c.forEach(i=>x.objectStore('c').put(i));t.forEach(i=>x.objectStore('t').put(i))});S.c=c;S.t=t;toast('রিস্টোর হয়েছে ✔');go('home')}catch(e){err('রিস্টোর করা যায়নি, আগের তথ্য ঠিক আছে')}}
+async function clearAll(){if(!await ask('⚠ সব কাস্টমার ও লেনদেন মুছে যাবে। আগে ব্যাকআপ নিয়েছেন?','হ্যাঁ, এগোই',1))return;if(!await ask('শেষবার জিজ্ঞাসা: সত্যিই সব মুছবেন? এটি আর ফেরানো যাবে না।','সব মুছুন',1))return;
+try{await tr(['c','t'],x=>{x.objectStore('c').clear();x.objectStore('t').clear()});S.c=[];S.t=[];toast('সব মুছে গেছে');go('home')}catch(e){err('মোছা যায়নি')}}
+/* ---------- render ---------- */
+const NAV=[['home','🏠','হোম'],['cust','👥','কাস্টমার'],['tx','✍️','নতুন হিসাব'],['rep','📊','রিপোর্ট'],['set','⚙️','সেটিংস ও ব্যাকআপ']],SC={home:Home,cust:Cust,led:Led,cf:CF,tx:TXF,rep:Rep,set:Set};
+function render(){$('#app').innerHTML=(SC[V.t]||Home)();const k={led:'cust',cf:'cust'}[V.t]||V.t;
+$('#nav').innerHTML=NAV.map(n=>`<button class="${n[0]==k?'on':''}" onclick="go('${n[0]}')"><span>${n[1]}</span>${n[2]}</button>`).join('')}
+</script>
+<script>
+/* ===== ক্লাউড: লগইন + সিঙ্ক (Supabase) ===== */
+const CFG=!/YOUR-/.test(SUPABASE_URL+SUPABASE_KEY);
+let SB=null,U=null,syncing=0,PQ=0,PS=new Set(),SH=null,AM='in',RECOV=0,SK='none';
+const SM={save:['⏳','হিসাব সংরক্ষণ হচ্ছে'],pull:['⏳','ক্লাউড থেকে ডেটা আনা হচ্ছে'],ok:['✅','ক্লাউডে সফলভাবে সংরক্ষিত'],off:['📴','ইন্টারনেট নেই—সিঙ্ক বাকি'],fail:['⚠️','সিঙ্ক ব্যর্থ—আবার চেষ্টা করুন'],none:['📱','ক্লাউড চালু নয় (শুধু ফোনে সেভ)']};
+const lastOk=()=>{const t=localStorage.getItem('bk_ok');return t?bn(new Date(t).toLocaleString('bn-BD')):'এখনো হয়নি'};
+function paint(){const e=$('#sb');if(!e)return;const m=SM[SK];e.innerHTML=(V.t=='auth'||V.t=='rec')?'':`${m[0]} ${m[1]}${PQ?' · অপেক্ষমাণ '+bn(PQ)+'টি':''}`;const l=$('#lo');l&&(l.textContent=lastOk())}
+const setSt=k=>{SK=k;paint()};
+function open(){return new Promise((r,j)=>{const q=indexedDB.open('bakikhata',2);q.onupgradeneeded=()=>{const d=q.result;['c','t','s'].forEach(n=>d.objectStoreNames.contains(n)||d.createObjectStore(n,{keyPath:'id'}));d.objectStoreNames.contains('q')||d.createObjectStore('q',{keyPath:'key'})};q.onsuccess=()=>{db=q.result;r()};q.onerror=()=>j(q.error)})}
+const get=(st,id)=>new Promise((r,j)=>{const q=db.transaction(st).objectStore(st).get(id);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});
+const mk=(k,id,u)=>({key:k+':'+id,u});
+async function pq(){const q=await all('q');PQ=q.length;PS=new Set(q.map(e=>e.key));paint()}
+async function loadLocal(){S.c=(await all('c')).filter(x=>!x.d);S.t=(await all('t')).filter(x=>!x.d);SH=(await all('s')).find(x=>x.id=='shop'&&!x.d)||null}
+const kick=()=>{clearTimeout(kick.h);kick.h=setTimeout(sync,400)};
+/* লোকাল সেভ: প্রতিটি পরিবর্তনে সময় (u) বসে ও সিঙ্ক লাইনে (q) যায়; মোছা মানে "টম্বস্টোন" */
+async function dbC(o){o.u=Date.now();await tr(['c','q'],t=>{t.objectStore('c').put(o);t.objectStore('q').put(mk('c',o.id,o.u))});up(S.c,o);await pq();kick()}
+async function dbT(o){o.u=Date.now();await tr(['t','q'],t=>{t.objectStore('t').put(o);t.objectStore('q').put(mk('t',o.id,o.u))});up(S.t,o);await pq();kick()}
+async function delT_(id){const u=Date.now();await tr(['t','q'],t=>{t.objectStore('t').put({id,d:1,u});t.objectStore('q').put(mk('t',id,u))});S.t=S.t.filter(x=>x.id!=id);await pq();kick()}
+async function delC_(id){const u=Date.now(),ts=S.t.filter(x=>x.cid==id);await tr(['c','t','q'],t=>{t.objectStore('c').put({id,d:1,u});t.objectStore('q').put(mk('c',id,u));ts.forEach(x=>{t.objectStore('t').put({id:x.id,d:1,u});t.objectStore('q').put(mk('t',x.id,u))})});S.c=S.c.filter(x=>x.id!=id);S.t=S.t.filter(x=>x.cid!=id);await pq();kick()}
+async function saveShop(){const o={id:'shop',n:$('#sn').value.trim(),u:Date.now()};await tr(['s','q'],t=>{t.objectStore('s').put(o);t.objectStore('q').put(mk('s','shop',o.u))});SH=o;await pq();kick();toast('সেভ হয়েছে ✔')}
+/* ===== সিঙ্ক ===== */
+async function push(){const q=await all('q');
+for(let i=0;i<q.length;i+=100){const ch=q.slice(i,i+100),rows=[],gone=[];
+for(const e of ch){const p=e.key.indexOf(':'),k=e.key.slice(0,p),id=e.key.slice(p+1),r=await get(k,id);r?rows.push({kind:k,id,data:r,u:r.u,deleted:!!r.d}):gone.push(e.key)}
+if(rows.length){const{error}=await SB.rpc('push_records',{rows});if(error)throw error}
+const cur=new Map((await all('q')).map(e=>[e.key,e.u]));
+await tr('q',t=>ch.forEach(e=>(gone.includes(e.key)||cur.get(e.key)==e.u)&&t.objectStore('q').delete(e.key)))}}
+async function pull(){let since=localStorage.getItem('bk_pull')||'1970-01-01T00:00:00Z',mx='',ch=0;
+for(let f=0;;f+=1000){const{data,error}=await SB.from('records').select('kind,id,data,deleted,u,updated_at').gte('updated_at',since).order('updated_at').order('kind').order('id').range(f,f+999);if(error)throw error;
+const w=[];for(const r of data){if(r.updated_at>mx)mx=r.updated_at;const l=await get(r.kind,r.id);if(!l||(l.u||0)<r.u)w.push(r)}
+if(w.length){await tr(['c','t','s','q'],t=>w.forEach(r=>{t.objectStore(r.kind).put(r.deleted?{id:r.id,d:1,u:r.u}:{...r.data,id:r.id,u:r.u});t.objectStore('q').delete(r.kind+':'+r.id)}));ch+=w.length}
+if(data.length<1000)break}
+if(mx)localStorage.setItem('bk_pull',new Date(Date.parse(mx)-120000).toISOString());
+if(ch){await loadLocal();if(['home','cust','led','rep'].includes(V.t))render()}}
+async function sync(){if(!SB||!U||syncing)return;if(!navigator.onLine)return setSt('off');syncing=1;setSt('save');
+try{await push();setSt('pull');await pull();localStorage.setItem('bk_ok',new Date().toISOString());await pq();PQ?kick():setSt('ok')}
+catch(e){console.error(e);await pq().catch(()=>0);setSt(navigator.onLine?'fail':'off')}finally{syncing=0}}
+/* ===== লগইন ===== */
+function Auth(){return `<h1>📒 আমার বাকি খাতা</h1><div class="card"><div class="row"><button class="btn ${AM=='in'?'':'gray'}" onclick="AM='in';render()">লগইন</button><button class="btn ${AM=='up'?'':'gray'}" onclick="AM='up';render()">নতুন অ্যাকাউন্ট</button></div>
+<label>ইমেইল</label><input id="ae" type="email" class="in" autocomplete="email"><label>পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)</label><input id="ap" type="password" class="in" autocomplete="${AM=='in'?'current-password':'new-password'}">
+<button class="btn big" onclick="doAuth()">${AM=='in'?'লগইন':'অ্যাকাউন্ট খুলুন'}</button><button class="btn gray" onclick="forgot()">পাসওয়ার্ড ভুলে গেছেন?</button>
+<small>প্রথমবার লগইনে ইন্টারনেট লাগবে। নতুন ফোনে একই ইমেইল দিয়ে লগইন করলে সব তথ্য ফিরে আসবে।</small></div>`}
+function Rec(){return `<h1>নতুন পাসওয়ার্ড দিন</h1><div class="card"><input id="np" type="password" class="in" placeholder="নতুন পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)"><button class="btn big" onclick="newPw()">পাসওয়ার্ড বদলান</button></div>`}
+async function doAuth(){const email=$('#ae').value.trim(),password=$('#ap').value;if(!/^\S+@\S+\.\S+$/.test(email))return err('সঠিক ইমেইল দিন');if(password.length<6)return err('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে');if(!navigator.onLine||!SB)return err('ইন্টারনেট ছাড়া লগইন করা যায় না');
+const r=AM=='in'?await SB.auth.signInWithPassword({email,password}):await SB.auth.signUp({email,password});
+if(r.error)return err(AM=='in'?'ইমেইল বা পাসওয়ার্ড ভুল':'অ্যাকাউন্ট খোলা যায়নি: '+r.error.message);
+if(!r.data.session)return toast('ইমেইলে পাঠানো লিংকে চাপ দিয়ে অ্যাকাউন্ট চালু করুন, তারপর লগইন করুন');await onSession(r.data.session)}
+async function forgot(){const email=$('#ae').value.trim();if(!/^\S+@\S+\.\S+$/.test(email))return err('আগে ইমেইল লিখুন');if(!SB)return err('ইন্টারনেট দরকার');const{error}=await SB.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});error?err('পাঠানো যায়নি, একটু পরে চেষ্টা করুন'):toast('পাসওয়ার্ড বদলের লিংক ইমেইলে পাঠানো হয়েছে')}
+async function newPw(){const p=$('#np').value;if(p.length<6)return err('পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে');const{error}=await SB.auth.updateUser({password:p});if(error)return err('বদলানো যায়নি, আবার লিংক নিন');RECOV=0;toast('পাসওয়ার্ড বদলে গেছে ✔');history.replaceState(null,'',location.pathname);const{data}=await SB.auth.getSession();if(data.session)await onSession(data.session);else{V.t='auth';render()}}
+async function wipe(){await tr(['c','t','s','q'],t=>['c','t','s','q'].forEach(n=>t.objectStore(n).clear()));S={c:[],t:[]};SH=null;PQ=0;PS=new Set();['bk_pull','bk_ok'].forEach(k=>localStorage.removeItem(k))}
+async function adopt(){const w=[];for(const k of ['c','t','s'])for(const x of await all(k)){x.u=x.u||x.ts||Date.now();w.push([k,x])}
+if(w.length)await tr(['c','t','s','q'],t=>w.forEach(([k,x])=>{t.objectStore(k).put(x);t.objectStore('q').put(mk(k,x.id,x.u))}))}
+async function onSession(s){U=s.user;const o=localStorage.getItem('bk_owner');if(o&&o!=U.id)await wipe();else if(!o)await adopt();
+localStorage.setItem('bk_owner',U.id);await loadLocal();await pq();if(!RECOV)V.t='home';render();sync()}
+async function logout(){if(navigator.onLine)await sync();await pq();
+if(PQ?!await ask('⚠ '+bn(PQ)+'টি হিসাব এখনো ক্লাউডে যায়নি। এখন লগআউট করলে এগুলো হারিয়ে যাবে।','তবুও লগআউট',1):!await ask('লগআউট করবেন? এই ফোন থেকে খাতার তথ্য মুছে যাবে (ক্লাউডে নিরাপদ আছে)।','লগআউট'))return;
+try{await SB.auth.signOut()}catch(e){}await wipe();localStorage.removeItem('bk_owner');U=null;V.t='auth';render()}
+async function delAcc(){if(!await ask('⚠ আপনার অ্যাকাউন্ট ও ক্লাউডের সব তথ্য চিরতরে মুছে যাবে। ফেরানো যাবে না। এই ফোনের তথ্যও মুছবে।','হ্যাঁ, এগোই',1))return;if(!await ask('শেষবার: সত্যিই অ্যাকাউন্ট মুছবেন?','অ্যাকাউন্ট মুছুন',1))return;
+const{error}=await SB.rpc('delete_my_account');if(error)return err('অ্যাকাউন্ট মোছা যায়নি। ইন্টারনেট দেখুন');try{await SB.auth.signOut()}catch(e){}await wipe();localStorage.removeItem('bk_owner');U=null;V.t='auth';render();toast('অ্যাকাউন্ট মুছে গেছে')}
+/* ===== ব্যাকআপ ও নিরাপত্তা ===== */
+function cloudCard(){if(!CFG)return `<div class="card"><b>☁️ ক্লাউড সেটআপ (একবারই)</b><p>Supabase → Project Settings → API থেকে দুটি জিনিস কপি করে এখানে বসান।</p><label>Project URL</label><input id="cu" class="in" placeholder="https://xxxx.supabase.co"><label>anon public key</label><input id="ck" class="in" placeholder="eyJ..."><button class="btn big" onclick="saveCfg()">সেভ করুন</button><small>শুধু anon public key দিন, service_role কখনোই নয়।</small></div>`;
+return `<div class="card"><b>☁️ ক্লাউড সিঙ্ক</b><p>অ্যাকাউন্ট: ${esc(U&&U.email||'—')}<br>অবস্থা: ${SM[SK][0]} ${SM[SK][1]}<br>সর্বশেষ সফল ব্যাকআপ: <span id="lo">${lastOk()}</span><br>সিঙ্কের অপেক্ষায়: ${bn(PQ)}টি</p>
+<button class="btn" onclick="sync()">এখনই সিঙ্ক করুন</button><label>দোকানের নাম</label><input id="sn" class="in" value="${esc(SH&&SH.n)}"><button class="btn gray" onclick="saveShop()">নাম সেভ করুন</button>
+<button class="btn gray" onclick="logout()">লগআউট</button><button class="btn red" onclick="delAcc()">অ্যাকাউন্ট মুছুন</button><small>অ্যাকাউন্ট মুছলে ক্লাউডের সব তথ্য চিরতরে মুছে যায়।</small></div>`}
+function saveCfg(){const u=$('#cu').value.trim().replace(/\/+$/,''),k=$('#ck').value.trim();if(!/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(u))return err('Project URL ঠিক নয় (যেমন https://abcd.supabase.co)');if(k.length<30||/\s/.test(k))return err('anon key ঠিক নয়');localStorage.setItem('sb_url',u);localStorage.setItem('sb_key',k);location.reload()}
+function Set2(){const s=Set(),i=s.indexOf('</h1>')+5;return s.slice(0,i)+cloudCard()+s.slice(i)}
+async function restore(){let o;try{o=JSON.parse($('#bk').value.trim())}catch(e){return err('ব্যাকআপের লেখা ঠিক নয়')}
+if(!o||!Array.isArray(o.c)||!Array.isArray(o.t)||o.c.some(x=>!x.id||!x.n)||o.t.some(x=>!x.id||!x.cid||!(x.amt>0)||!x.date||!/^[bj]$/.test(x.type)))return err('এটি সঠিক ব্যাকআপ ফাইল নয়');
+if(!await ask('ব্যাকআপের '+bn(o.c.length)+' কাস্টমার ও '+bn(o.t.length)+' লেনদেন এখনকার তথ্যের সাথে <b>মেলানো</b> হবে। একই রেকর্ড দ্বিতীয়বার যোগ হবে না; দুই জায়গায় থাকলে নতুনটি থাকবে। কিছু মুছবে না। এগোবেন?','হ্যাঁ, মেলান'))return;
+const w=[];for(const[k,a]of[['c',o.c],['t',o.t],['s',o.s||[]]])for(const x of a){const l=await get(k,x.id),u=x.u||x.ts||1;if(l&&(l.u||0)>=u)continue;x.u=u;w.push([k,x])}
+try{if(w.length)await tr(['c','t','s','q'],t=>w.forEach(([k,x])=>{t.objectStore(k).put(x);t.objectStore('q').put(mk(k,x.id,x.u))}));await loadLocal();await pq();kick();toast(bn(w.length)+'টি নতুন/নতুনতর রেকর্ড যুক্ত হয়েছে ✔');go('home')}catch(e){err('রিস্টোর করা যায়নি, আগের তথ্য ঠিক আছে')}}
+async function clearAll(){if(!await ask('⚠ সব কাস্টমার ও লেনদেন মুছবেন? ক্লাউড ও অন্য ফোন থেকেও মুছে যাবে।','হ্যাঁ, এগোই',1))return;if(!await ask('শেষবার জিজ্ঞাসা: সত্যিই সব মুছবেন?','সব মুছুন',1))return;
+const u=Date.now(),c=[...S.c],t=[...S.t];try{await tr(['c','t','q'],x=>{c.forEach(i=>{x.objectStore('c').put({id:i.id,d:1,u});x.objectStore('q').put(mk('c',i.id,u))});t.forEach(i=>{x.objectStore('t').put({id:i.id,d:1,u});x.objectStore('q').put(mk('t',i.id,u))})});S.c=[];S.t=[];await pq();kick();toast('সব মুছে গেছে');go('home')}catch(e){err('মোছা যায়নি')}}
+function render(){$('#app').innerHTML=(SC[V.t]||Home)();const k={led:'cust',cf:'cust'}[V.t]||V.t,a=V.t=='auth'||V.t=='rec';
+$('#nav').style.display=a?'none':'flex';$('#nav').innerHTML=NAV.map(n=>`<button class="${n[0]==k?'on':''}" onclick="go('${n[0]}')"><span>${n[1]}</span>${n[2]}</button>`).join('');paint()}
+NAV[4][2]='ব্যাকআপ ও নিরাপত্তা';SC.set=Set2;SC.auth=Auth;SC.rec=Rec;
+addEventListener('online',()=>SB?sync():location.reload());addEventListener('offline',()=>setSt('off'));
+document.addEventListener('visibilitychange',()=>document.visibilityState=='visible'&&sync());setInterval(()=>document.visibilityState=='visible'&&sync(),30000);
+(async()=>{try{await open()}catch(e){$('#app').innerHTML='<div class="card"><b>⚠ এই ব্রাউজারে ডেটা সেভ করা যাচ্ছে না।</b><br>Chrome ব্রাউজারে (প্রাইভেট ছাড়া) খুলুন।</div>';return}
+if(!CFG){await loadLocal();V.t='set';render();setSt('none');return}
+if(!window.supabase){const o=localStorage.getItem('bk_owner');if(o){await loadLocal();await pq();render();setSt('off')}else{V.t='auth';render();err('প্রথমবার ইন্টারনেট লাগবে')}return}
+SB=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+SB.auth.onAuthStateChange((ev,s)=>{if(ev=='PASSWORD_RECOVERY'){RECOV=1;V.t='rec';render()}else if(ev=='SIGNED_OUT'&&U){U=null;V.t='auth';render()}});
+const{data}=await SB.auth.getSession();if(data.session)await onSession(data.session);else{V.t='auth';render()}})();
+</script></body></html>
